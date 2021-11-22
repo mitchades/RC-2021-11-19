@@ -12,11 +12,11 @@ Found by brute force search of the 2\*3^27 different ways players could share 3 
 I found the first version of the answer 2.2% of the way through.
 
 # Files
-## [./submission.md]
+## [submission.md](./submission.md)
 My submission for the puzzle, lightly edited and with a postscript added
 
-## [./RC 2021-11-19.py]
+## [RC-2021-11-19.py](./RC-2021-11-19.py)
 My initial attempts at the problem and the code that double-checked my answer. Requires Python 3.10.
 
-## [./rc2021-11-19.cpp]
+## [rc2021-11-19.cpp](./rc2021-11-19.cpp)
 The code that solved the problem. Originally compiled with Visual Studio 2019. I think the only non-C code I used was the `inline` compiler hint and `std::cout`.
