@@ -1,22 +1,92 @@
 import itertools
 
+#########
+# This was lifted from Stack Overflow.
+
 def chunks(lst, n):
     """Yield successive n-sized chunks from lst."""
     for i in range(0, len(lst), n):
         yield lst[i:i + n]
 
-# Assuming "mathy" ccw order:
+# Assuming "mathy" ccw order for the players:
 #
 #    1
 #  2 @ 0
 #    3
 
+#########
+# This was the first function I wrote. It gave everyone the same
+# strategy. Its best result was shown above.
+            
+def test_all_same():
+    most_successes = 0
+    for raw_strat in itertools.product(range(3), repeat=9):
+        strat = list(chunks(raw_strat, 3))
+
+        successes = 0
+        for hats in itertools.product(range(3), repeat=4):
+            guesses = [strat[hats[3]][hats[1]],
+                       strat[hats[0]][hats[2]],
+                       strat[hats[1]][hats[3]],
+                       strat[hats[2]][hats[0]]]
+            if (hats[0] == guesses[0] or
+                hats[1] == guesses[1] or
+                hats[2] == guesses[2] or
+                hats[3] == guesses[3]):
+                    successes += 1
+
+        if successes > most_successes:
+            most_successes = successes
+            print(strat, successes)
+
+# Results:
 # bs = best single strategy
 #    = person to your left, if left != right
-#      1 + person to left, if left == right
+#      1 + person to left (mod 3), if left == right
 # ba = first guess for alternate strategy for 1 person
 bs = [[1,0,0], [1,2,1], [2,2,0]]
 ba = [[0,0,0], [1,1,1], [2,2,2]]
+
+#########
+# The best single strategy I found only failed if all the hats were the
+# same color. I tried giving 3 players that strategy and testing every
+# possible strategy for the 0th player. It found no successful strategies.
+
+def test_3_best():
+    """s0 iterates; s1~3 are all [[1,0,0],[1,2,1],[2,2,0]]"""
+    most_successes = 0
+    for raw_strat in itertools.product(range(3), repeat=9):
+        strat = list(chunks(raw_strat, 3))
+
+        successes = 0
+        for hats in itertools.product(range(3), repeat=4):
+            guesses = [strat[hats[3]][hats[1]],
+                       bs[hats[0]][hats[2]],
+                       strat[hats[1]][hats[3]],
+                       bs[hats[2]][hats[0]]]
+            if (hats[0] == guesses[0] or
+                hats[1] == guesses[1] or
+                hats[2] == guesses[2] or
+                hats[3] == guesses[3]):
+                    successes += 1
+        if successes > most_successes:
+            most_successes = successes
+            print(strat, successes)
+            
+# The best result of the above:
+# 0 [(0, 0, 0), (1, 1, 2), (1, 0, 0)]
+# 1, 2, 3 [(1, 0, 0), (1, 2, 2), (1, 0, 0)] 79
+
+# Things were about to get a lot slower. I realized I'd need a hat test that
+# just returned pass or fail, which would allow it to return fail as soon
+# as possible. I made a more verbose version as well, which could
+# help me logic through an answer. (Spoiler: it didn't.)
+
+#########
+# This function checks all 3**4 == 81 arrangements of hats, returning
+# the number of successes. In verbose mode, it prints all the results
+# and indicates which arrangements were only guessed correctly by
+# one player.
 
 def check_all_hats(s0, s1, s2, s3, verbose=False):
     """s0~3 = 3x3 strategy for that player"""
@@ -54,6 +124,10 @@ def check_all_hats(s0, s1, s2, s3, verbose=False):
     if verbose: print("Total successes:", successes)
     return successes
 
+#########
+# This version of check_all_hats() wil return 0 as soon as it finds a
+# failure. It returns 81 if everything works.
+
 def check_perfection(s0, s1, s2, s3, verbose=False):
     """s0~3 = 3x3 strategy for that player"""
     for hats in itertools.product(range(3), repeat=4):
@@ -66,32 +140,9 @@ def check_perfection(s0, s1, s2, s3, verbose=False):
                 return 0
     return 81
 
-
-def test_3_best():
-    """s0 iterates; s1~3 are all [[1,0,0],[1,2,1],[2,2,0]]"""
-    most_successes = 0
-    for raw_strat in itertools.product(range(3), repeat=9):
-        strat = list(chunks(raw_strat, 3))
-
-        successes = 0
-        for hats in itertools.product(range(3), repeat=4):
-            guesses = [strat[hats[3]][hats[1]],
-                       bs[hats[0]][hats[2]],
-                       strat[hats[1]][hats[3]],
-                       bs[hats[2]][hats[0]]]
-            if (hats[0] == guesses[0] or
-                hats[1] == guesses[1] or
-                hats[2] == guesses[2] or
-                hats[3] == guesses[3]):
-                    successes += 1
-        if successes > most_successes:
-            most_successes = successes
-            print(strat, successes)
-
-# Best to date:
-# 0 [(0, 0, 0), (1, 1, 2), (1, 0, 0)]
-# 1, 2, 3 [(1, 0, 0), (1, 2, 2), (1, 0, 0)] 79
-
+#########
+# This function checks every way to distribute two strategies
+# between the players. It found no successful strategies.
 
 def iterate2():
     fifth = -1
@@ -111,32 +162,22 @@ def iterate2():
         if successes == 81:
             print('0, 2', s0, '1, 3', s1, successes)
 
+#########
+# After running this long enough to see it wouldn't work,
+# I switched to C++ for iterate3(). 
 
-def test_all_same():
-    most_successes = 0
-    for raw_strat in itertools.product(range(3), repeat=9):
-        strat = list(chunks(raw_strat, 3))
+# This is the answer I got from my C++ code:
 
-        successes = 0
-        for hats in itertools.product(range(3), repeat=4):
-            guesses = [strat[hats[3]][hats[1]],
-                       strat[hats[0]][hats[2]],
-                       strat[hats[1]][hats[3]],
-                       strat[hats[2]][hats[0]]]
-            if (hats[0] == guesses[0] or
-                hats[1] == guesses[1] or
-                hats[2] == guesses[2] or
-                hats[3] == guesses[3]):
-                    successes += 1
+# check_all_hats([[0,0,1],[0,1,2],[1,2,2]],
+#                [[2,2,1],[2,1,0],[1,0,0]],
+#                [[1,0,0],[2,1,0],[2,2,1]],
+#                [[1,0,0],[2,1,0],[2,2,1]], verbose=True)
 
-        if successes > most_successes:
-            most_successes = successes
-            print(strat, successes)
-
-##check_all_hats([[0,0,1],[0,1,2],[1,2,2]],
-##               [[2,2,1],[2,1,0],[1,0,0]],
-##               [[1,0,0],[2,1,0],[2,2,1]],
-##               [[1,0,0],[2,1,0],[2,2,1]], verbose=True)
+#########
+# I wrote this version of the test function as a final check
+# of my answer. Instead of a 4x3x3 nested list of guesses, 
+# I used the inputs each player would see and match/case'd
+# their guess from that.
 
 def test_english(verbose=False):
     """Strategies based on what each player sees."""
