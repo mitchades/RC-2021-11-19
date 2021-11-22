@@ -43,9 +43,7 @@ def test_all_same():
 # bs = best single strategy
 #    = person to your left, if left != right
 #      1 + person to left (mod 3), if left == right
-# ba = first guess for alternate strategy for 1 person
 bs = [[1,0,0], [1,2,1], [2,2,0]]
-ba = [[0,0,0], [1,1,1], [2,2,2]]
 
 #########
 # The best single strategy I found only failed if all the hats were the
@@ -62,7 +60,7 @@ def test_3_best():
         for hats in itertools.product(range(3), repeat=4):
             guesses = [strat[hats[3]][hats[1]],
                        bs[hats[0]][hats[2]],
-                       strat[hats[1]][hats[3]],
+                       bs[hats[1]][hats[3]],
                        bs[hats[2]][hats[0]]]
             if (hats[0] == guesses[0] or
                 hats[1] == guesses[1] or
@@ -73,10 +71,6 @@ def test_3_best():
             most_successes = successes
             print(strat, successes)
             
-# The best result of the above:
-# 0 [(0, 0, 0), (1, 1, 2), (1, 0, 0)]
-# 1, 2, 3 [(1, 0, 0), (1, 2, 2), (1, 0, 0)] 79
-
 # Things were about to get a lot slower. I realized I'd need a hat test that
 # just returned pass or fail, which would allow it to return fail as soon
 # as possible. I made a more verbose version as well, which could
@@ -161,6 +155,10 @@ def iterate2():
         successes = check_perfection(s0, s1, s0, s1)
         if successes == 81:
             print('0, 2', s0, '1, 3', s1, successes)
+            
+# The best result of the above using the check_all_hats() version:
+# 0 [(0, 0, 0), (1, 1, 2), (1, 0, 0)]
+# 1, 2, 3 [(1, 0, 0), (1, 2, 2), (1, 0, 0)] 79
 
 #########
 # After running this long enough to see it wouldn't work,
