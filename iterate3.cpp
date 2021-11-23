@@ -1,8 +1,4 @@
-// rc2021-11-19.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
 #include <iostream>
-
 
 // The Python version of the code looked something like this:
 // for raw_strat in itertools.product(range(3), repeat=27):
