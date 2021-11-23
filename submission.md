@@ -6,7 +6,7 @@ Number the colors 0, 1, and 2. Arrange the players 0, 1, 2, 3 counterclockwise. 
 
 When I think about problems like this, my first assumption is always "Looking at your fellow players' hats gives you no information about your own hat. Therefore, the problem's impossible." I know that's not true, though -- but I couldn't figure out how to get started on the solution. So, I went to my computer.
 
-After some thought, I realized that there were a total of 3^(3\*3\*4) > 150 quadrillion possible strategies to consider for the four players. That didn't seem tractable, especially in the weekend we have to solve the problem. So, I first assumed they all used the same strategy. (I assumed this would fail, since they wouldn't know where they'd be in the circle.) I labeled the players 0, 1, 2, and 3 going counterclockwise so their left and right would be the same as the left and right of the list of players. I labeled the hat colors 0, 1, and 2 in order of increasing frequency (i.e., red, yellow, blue). This is the `test_all_same()` function in the Python file.
+After some thought, I realized that there were a total of 3^(3\*3\*4) > 150 quadrillion possible strategies to consider for the four players. That didn't seem tractable, especially in the weekend we have to solve the problem. So, I first assumed they all used the same strategy. (I assumed this would fail, since they wouldn't know where they'd be in the circle.) I labeled the players 0, 1, 2, and 3 going counterclockwise so their left and right would be the same as the left and right of the list of players. I labeled the hat colors 0, 1, and 2 in order of increasing frequency (i.e., red, yellow, blue). This is the `test_all_same()` function in [attempts.py](attempts.py).
 
 The result: no luck. The first equal-best strat I found was [(1, 0, 0), (1, 2, 1), (2, 2, 0)], where the row index is the color of the hat on your left and the column index was the color of the hat on the right -- e.g. if the left hat was yellow and the right hat was blue, guess strat[1][2] = 1 = yellow. The overall description for this strategy was at least easy enough to describe in words: 
 
@@ -27,7 +27,7 @@ The code I wrote didn't have a progress indicator. So, after waiting a while, I 
 
 Once I got to "Checking (0, 2, 1, 1, 2)..." (i.e., the first five steps of strategy 0), I realized that the symmetry of the problem meant that if there was a solution, there would be a symmetric version of it where the first digit of the raw strategy is 0 and the first non-zero digit is 1. So, there weren't any solutions with only two total strategies.
 
-What about three? For this, I shifted to C++. Instead of making separate 3x3 arrays for each strategy, I used the raw_strat (i.e. every 27-digit number in ternary, renamed r for the C++ version) directly and calculated where in that array the result of each strategy based on the hats of the left and right players.The rest of the code was similar to the Python version, with itertools.product replace with a boatload of for loops:
+What about three? For this, I shifted to C++ and [iterate3.cpp](iterate3.cpp). Instead of making separate 3x3 arrays for each strategy, I used the raw_strat (i.e. every 27-digit number in ternary, renamed r for the C++ version) directly and calculated where in that array the result of each strategy based on the hats of the left and right players. The rest of the code was similar to the Python version, with itertools.product replace with a boatload of for loops.
 
 iterate(0, 1, 2, 2) means that player 0 uses the strategy corresponding to r[0 thru 8], player 1 uses the strategy corresponding to r[9 thru 17], and players 2 and 3 use the strategy corresponding to r[18 thru 26]. This meant that the people sharing a strategy are neighbors; if this failed to give a result, I would try iterate(0, 2, 1, 2).
 
@@ -61,3 +61,5 @@ After a little bit of thought, I was able to simplify the final description of t
 * Player 0: sgn(left + right)
 * Player 1: -sgn(left + right)
 * Players 2 and 3: sgn(left - right)
+
+I tested this version in [test-sgn.py](test-sgn.py). It passed.
